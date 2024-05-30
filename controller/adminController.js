@@ -4,7 +4,7 @@ const createToken = require("../util/creatToken");
 const { hash, compare } = require("bcrypt");
 const AppError = require("../util/customError");
 const { validationResult } = require("express-validator");
-
+require('dotenv').config();
 
 
 const login = (req, res, next) => {
@@ -39,7 +39,7 @@ const login = (req, res, next) => {
                      secure: true,
                      httpOnly: true,
                      sameSite: "lax",
-                     domain: "localhost",
+                     domain: process.env.DOMAIN,
                      path: "/en/admin",
                      maxAge: 1200000,
                   });

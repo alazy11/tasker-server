@@ -6,6 +6,7 @@ const AppError = require('../util/customError');
 const {validationResult} = require('express-validator');
 const generatSecretKey = require('../util/generatSecretKey');
 const transporter = require('../util/emailService');
+require('dotenv').config();
 
 
 const create = (req, res, next) => {
@@ -56,7 +57,7 @@ const create = (req, res, next) => {
                   secure: true,
                   httpOnly: true,
                   sameSite: "lax",
-                  domain: "localhost",
+                  domain: process.env.DOMAIN,
                   path: "/en/company",
                   maxAge: 3600000,
                });
@@ -186,7 +187,7 @@ const login = (req, res, next) => {
       (error, result, fields) => {
          if (error) {
             console.log(error);
-            next(AppError.create(error, 500, "database Error"));
+            next(AppError.create("error", 500, "database Error"));
          }
          if (result.length > 0) {
 
@@ -194,7 +195,7 @@ const login = (req, res, next) => {
 
                if (err){
                   console.log('compar...',err);
-                  next(AppError.create(error, 500, "database Error"));
+                  next(AppError.create("error", 500, "database Error"));
                } 
                if (resul) {
                   if(result[0]["security_key"] === secretKey) {
@@ -206,7 +207,7 @@ const login = (req, res, next) => {
                      secure: true,
                      httpOnly: true,
                      sameSite: "lax",
-                     domain: "localhost",
+                     domain: process.env.DOMAIN,
                      path: "/en/company",
                      // path: "/en/company",
                      maxAge: 86400000,
@@ -216,7 +217,7 @@ const login = (req, res, next) => {
                      // secure: true,
                      // httpOnly: true,
                      sameSite: "lax",
-                     domain: "localhost",
+                     domain: process.env.DOMAIN,
                      path: "/en/company",
                      maxAge: 86400000,
                   });
@@ -288,7 +289,7 @@ const getRoomId =  (req, res, next)=>{
                // secure: true,
                // httpOnly: true,
                sameSite: "lax",
-               domain: "localhost",
+               domain: process.env.DOMAIN,
                path: "/en/company",
                maxAge: 86400000,
             });

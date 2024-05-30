@@ -5,7 +5,7 @@ const { hash, compare } = require("bcrypt");
 const AppError = require("../util/customError");
 const { validationResult } = require("express-validator");
 const {addEmployee} = require('./companyController');
-
+require('dotenv').config();
 
 const create = (req, res, next) => {
    const result = validationResult(req);
@@ -56,7 +56,7 @@ const create = (req, res, next) => {
                secure: true,
                httpOnly: true,
                sameSite: "lax",
-               domain: "localhost",
+               domain: process.env.DOMAIN,
                path: "/en/user",
                maxAge: 1200000,
             });
@@ -154,7 +154,7 @@ const login = (req, res, next) => {
                      secure: true,
                      httpOnly: true,
                      sameSite: "lax",
-                     domain: "localhost",
+                     domain: process.env.DOMAIN,
                      path: "/en/user",
                      maxAge: 3600000,
                   });
@@ -163,7 +163,7 @@ const login = (req, res, next) => {
                      // secure: true,
                      // httpOnly: true,
                      sameSite: "lax",
-                     domain: "localhost",
+                     domain: process.env.DOMAIN,
                      path: "/en/user",
                      maxAge: 3600000,
                   });
