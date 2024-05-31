@@ -218,7 +218,7 @@ const login = (req, res, next) => {
                         secure: true,
                         httpOnly: true,
                         sameSite: "none",
-                        domain: ".tasker-client-steel.vercel.app",
+                        // domain: ".tasker-client-steel.vercel.app",
                         path: "/en/company",
                         maxAge: 86400000,
                      });
