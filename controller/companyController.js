@@ -211,17 +211,15 @@ const login = (req, res, next) => {
                      sameSite:"lax",
                      domain: process.env.DOMAIN,
                      path: "/en/company",
-                     // path: "/en/company",
                      maxAge: 86400000,
                   });
                   if(process.env.NODE_ENV === "production")
                      res.cookie("token", token, {
                         secure: true,
                         httpOnly: true,
-                        // sameSite: "none",
+                        sameSite: "none",
                         domain: "tasker-client-steel.vercel.app",
                         path: "/en/company",
-                        // path: "/en/company",
                         maxAge: 86400000,
                      });
 
