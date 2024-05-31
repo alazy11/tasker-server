@@ -218,7 +218,7 @@ const login = (req, res, next) => {
                      res.cookie("token", token, {
                         secure: true,
                         httpOnly: true,
-                        sameSite: "none",
+                        // sameSite: "none",
                         domain: "tasker-client-steel.vercel.app",
                         path: "/en/company",
                         // path: "/en/company",
