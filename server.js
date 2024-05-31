@@ -28,6 +28,7 @@ const folderPath = path.join(__dirname);
 app.use(cors({
    origin: process.env.FRONT_URL,
    credentials:true,
+   exposedHeaders: ["Set-cookie"]
 }))
 
 app.use(compression());
