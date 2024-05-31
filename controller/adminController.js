@@ -38,7 +38,7 @@ const login = (req, res, next) => {
                   res.cookie("token", token, {
                      secure: true,
                      httpOnly: true,
-                     sameSite: "lax",
+                     sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
                      domain: process.env.DOMAIN,
                      path: "/en/admin",
                      maxAge: 1200000,

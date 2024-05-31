@@ -56,7 +56,7 @@ const create = (req, res, next) => {
                res.cookie("token", token, {
                   secure: true,
                   httpOnly: true,
-                  sameSite: "lax",
+                  sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
                   domain: process.env.DOMAIN,
                   path: "/en/company",
                   maxAge: 3600000,
@@ -206,7 +206,7 @@ const login = (req, res, next) => {
                   res.cookie("token", token, {
                      secure: true,
                      httpOnly: true,
-                     sameSite: "lax",
+                     sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
                      domain: process.env.DOMAIN,
                      path: "/en/company",
                      // path: "/en/company",
@@ -216,7 +216,7 @@ const login = (req, res, next) => {
                   res.cookie("roomId", result[0]["room_ID"], {
                      // secure: true,
                      // httpOnly: true,
-                     sameSite: "lax",
+                     sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
                      domain: process.env.DOMAIN,
                      path: "/en/company",
                      maxAge: 86400000,
@@ -288,7 +288,7 @@ const getRoomId =  (req, res, next)=>{
             res.cookie("roomId", result[0]["room_ID"], {
                // secure: true,
                // httpOnly: true,
-               sameSite: "lax",
+               sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
                domain: process.env.DOMAIN,
                path: "/en/company",
                maxAge: 86400000,
