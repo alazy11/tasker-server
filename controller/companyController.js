@@ -187,7 +187,7 @@ const login = (req, res, next) => {
       (error, result, fields) => {
          if (error) {
             console.log(error);
-            next(AppError.create("error", 500, "database Error"));
+            next(AppError.create(error, 500, "database Error"));
          }
          if (result.length > 0) {
 
@@ -195,7 +195,7 @@ const login = (req, res, next) => {
 
                if (err){
                   console.log('compar...',err);
-                  next(AppError.create("error", 500, "database Error"));
+                  next(AppError.create(error, 500, "database Error"));
                } 
                if (resul) {
                   if(result[0]["security_key"] === secretKey) {
@@ -239,6 +239,7 @@ const login = (req, res, next) => {
                   RESPONSE.successHandler(res, 200, {
                      id: result[0]["company_id"],
                      userName: result[0]["company_name"],
+                     cookies: res.getHeaders()['set-cookie']
                   });
                   return;
                   }
