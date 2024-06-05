@@ -8,8 +8,7 @@ const {validationResult} = require('express-validator');
 
 const create = (req, res, next)=> {
 
-   const {projectID,spaceID,title,state,manager,priority,selectedTags,phases,startDate,endDate,desc,requirements} = req.body;
-   let link = requirements === 'file' ? false : true;
+   const {projectID,spaceID,title,state,manager,priority,selectedTags,phases,startDate,endDate,desc} = req.body;
    let tasktag = [];
    const task = [phases,projectID,manager,title,desc,startDate,endDate,link,state,priority];
 
@@ -24,7 +23,6 @@ const create = (req, res, next)=> {
       description = ?,
       start_date = ?,
       end_date = ?,
-      link = ?,
       state = ?,
       priority = ?,
 

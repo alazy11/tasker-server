@@ -39,7 +39,6 @@ const setMemberInSpace = (req,res,next)=>{
 
 const createTask = (req, res, next,spaceID)=>{
 
-
    pool.query(`CREATE TABLE task_${spaceID} (
       
       task_id int AUTO_INCREMENT,
@@ -50,7 +49,6 @@ const createTask = (req, res, next,spaceID)=>{
       description varchar(3000) NOT NULL,
       start_date DATETIME,
       end_date DATETIME,
-      link BOOLEAN DEFAULT false,
       state varchar(20) NOT NULL DEFAULT "todo",
       priority varchar(20) NOT NULL DEFAULT "normal",
 
@@ -220,6 +218,7 @@ const getSpace = (req, res, next) => {
       }
    );
 }
+
 
 const updateSpace = (req, res, next) => {
 

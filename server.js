@@ -55,50 +55,11 @@ app.use('/:lang/company/space',SPACE);
 app.use('/:lang/company/space/:spaceID/project',PROJECT);
 app.use('/:lang/company/space/:spaceID/project/:projectID/task',TASK);
 app.use((error,req,res,next)=>{
+   console.log("error.statusCode",error.statusCode)
+   console.log("error.message",error.message)
    RESPONSE.errorHandler(res,error.statusCode,error.message);
    // res.status(error.statusCode).json({msg:error.message});
 })
-
-
-
-
-// const storage = multer.diskStorage({
-//    destination: (req, file, cb) => {
-//       const destinationPath  = path.join(`${req.FolderPath}`,`${req.body.folderFilePath}`);
-//       console.log('path....file',req.body.folderFilePath)
-//        cb(null, destinationPath);
-//       //  cb(null, './uploads/company/4/space/427db24566a/project/427db24566a41fc9821dc/public');
-//    },
-//    filename: (req, file, cb) => {
-//        const fileName = file.originalname.toLowerCase().split(' ').join('-');
-//        cb(null, fileName)
-//    }
-// });
-
-// const upload = multer({
-//    storage: storage,
-//    // fileFilter: (req, file, cb) => {
-//    //     if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg") {
-//    //         cb(null, true);
-//    //     } else {
-//    //         cb(null, false);
-//    //         return cb(new Error('Only .png, .jpg and .jpeg format allowed!'));
-//    //     }
-//    // }
-// });
-
-
-
-// app.post('/:lang/company/space/:spaceID/project/:projectID/folder/:folderID/file',authJWTUser,upload.single('file'),(req, res, next)=>{
-//    console.log("req.body.files)",req.body.file)
-//    console.log("req.file)",req.file)
-
-//    res.status(200).json({
-//       data: req.body.files
-//    })
-
-// });
-
 
 
 

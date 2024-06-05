@@ -7,6 +7,9 @@ class AppError extends Error{
       this.message = message;
       this.statusCode = statusCode;
       this.statusText = statusText;
+
+      console.log("this.statusText ",this.statusText)
+
       return this;
    }
    

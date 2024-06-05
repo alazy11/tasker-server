@@ -226,8 +226,8 @@ const login = (req, res, next) => {
 
 
                   res.cookie("roomId", result[0]["room_ID"], {
-                     // secure: true,
-                     // httpOnly: true,
+                     secure: true,
+                     httpOnly: true,
                      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
                      domain: process.env.DOMAIN,
                      path: "/en/company",
@@ -261,7 +261,9 @@ const login = (req, res, next) => {
 };
 
 const getCompany = (req, res, next)=>{
-   // console.log('user',req.user);
+   
+   console.log('user company.....',req.user);
+
    pool.query(
       "SELECT * FROM company WHERE company_name = ? ",
       [req.user.userName],

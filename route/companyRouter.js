@@ -8,7 +8,13 @@ const isAlreadyEmployee = require('../middleware/user_middleware/isAlreadyEmploy
 
 const COMPANY = Router();
 
-COMPANY.route('/').get(authJWTUser,Company.getCompany);
+COMPANY.route('/').get((res,req,next)=>{
+   console.log('ok copklasjnoipjp wsckjpowcpn ')
+   next()
+},authJWTUser,(res,req,next)=>{
+   console.log('ok dfsssssssss wsckjpowcpn ')
+   next()
+},Company.getCompany);
 COMPANY.route('/search').get(authJWTUser,Company.searchUser);
 COMPANY.route('/employee/search').get(authJWTUser,Company.searchEmployee);
 COMPANY.route('/roomId').get(authJWTUser,Company.getRoomId);

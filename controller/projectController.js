@@ -208,7 +208,7 @@ const AddPhases = (req, res, next) => {
             return;
          }
    
-         console.log("project result.....",result)
+         // console.log("project result.....",result)
          RESPONSE.successHandler(res, 200, {
             ...result
          });
@@ -292,7 +292,7 @@ const deleteProject = (req, res, next) => {
       .then(() => console.log('Folder deletion completed.'))
       .catch((err) => console.error('Error deleting folder:', err));
 
-         console.log("project result.....",result)
+         // console.log("project result.....",result)
          RESPONSE.successHandler(res, 200, {
             projectID
          });
@@ -326,7 +326,7 @@ const getAllProjects = (req, res, next) => {
          return;
       }
 
-      console.log("project result.....",result)
+      // console.log("project result.....",result)
       pool.query(
          `SELECT COUNT(*) AS count FROM project WHERE space_id = ?`,
          [spaceID],

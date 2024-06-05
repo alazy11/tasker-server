@@ -10,10 +10,12 @@ const authJWTUser = (req,res,next)=>{
    // console.log('token....hh',token)
    if(token) {
       // console.log('token....',token)
+      // console.log('token....hh',token)
       try{
          const user = verify(token, process.env.JWT_SECRET_KEY);
-         // console.log('user cookie', user);
+         console.log('user cookie', user);
          req.user = user;
+         console.log('req.user cookie', req.user);
          next();
       } catch (err) {
          console.log('jwt ver',err)
