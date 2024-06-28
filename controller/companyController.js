@@ -219,7 +219,7 @@ const login = (req, res, next) => {
                         httpOnly: true,
                         sameSite: "none",
                         // domain: process.env.DOMAIN,
-                        path: "/en/company",
+                        // path: "/en/company",
                         maxAge: 86400000,
                      });
 
@@ -230,7 +230,7 @@ const login = (req, res, next) => {
                      httpOnly: true,
                      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
                      // domain: process.env.DOMAIN,
-                     path: "/en/company",
+                     // path: "/en/company",
                      maxAge: 86400000,
                   });
 
