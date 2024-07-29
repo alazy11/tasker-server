@@ -63,7 +63,7 @@ const create = (req, res, next) => {
                   secure: true,
                   httpOnly: true,
                   sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                  // domain: process.env.DOMAIN,
+                  domain: ".tasker-tool.com",
                   path: "/en/company",
                   maxAge: 3600000,
                });
@@ -72,7 +72,7 @@ const create = (req, res, next) => {
                   secure: true,
                   // httpOnly: true,
                   sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                  // domain: process.env.DOMAIN,
+                  domain: ".tasker-tool.com",
                   path: "/en/company",
                   maxAge: 86400000,
                });
@@ -81,7 +81,7 @@ const create = (req, res, next) => {
                   secure: true,
                   // httpOnly: true,
                   sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                  // domain: process.env.DOMAIN,
+                  domain: ".tasker-tool.com",
                   path: "/en/company",
                   maxAge: 3600000,
                });
@@ -287,7 +287,7 @@ const logout = (req, res, next) => {
       secure: false,
       httpOnly: true,
       sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-      // domain: process.env.DOMAIN,
+      domain: ".tasker-tool.com",
       path: "/en/company",
       // path: "/en/company",
       maxAge: 0,
@@ -297,7 +297,7 @@ const logout = (req, res, next) => {
       secure: true,
       // httpOnly: true,
       sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-      // domain: process.env.DOMAIN,
+      domain: ".tasker-tool.com",
       path: "/en/company",
       maxAge: 0,
    });
@@ -306,7 +306,7 @@ const logout = (req, res, next) => {
       secure: true,
       // httpOnly: true,
       sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-      // domain: process.env.DOMAIN,
+      domain: ".tasker-tool.com",
       path: "/en/company",
       maxAge: 0,
    });

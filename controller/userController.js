@@ -58,25 +58,25 @@ const create = (req, res, next) => {
                secure: true,
                httpOnly: true,
                sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-               // domain: process.env.DOMAIN,
+               domain: ".tasker-tool.com",
                path: "/en/user",
                maxAge: 1200000,
             });
 
             res.cookie("roomId", roomId, {
-               // secure: true,
+               secure: true,
                // httpOnly: true,
                sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-               // domain: process.env.DOMAIN,
+               domain: ".tasker-tool.com",
                path: "/en/user",
                maxAge: 3600000,
             });
 
             res.cookie("type", 'user', {
-               // secure: true,
+               secure: true,
                // httpOnly: true,
                sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-               // domain: process.env.DOMAIN,
+               domain: ".tasker-tool.com",
                path: "/en/user",
                maxAge: 3600000,
             });
@@ -174,28 +174,28 @@ const login = (req, res, next) => {
                      userName: result[0]["user_name"],
                   });
                   res.cookie("token", token, {
-                     secure: false,
+                     secure: true,
                      httpOnly: true,
                      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                     // domain: process.env.DOMAIN,
+                     domain: ".tasker-tool.com",
                      path: "/en/user",
                      maxAge: 3600000,
                   });
 
                   res.cookie("roomId", result[0]["room_ID"], {
-                     // secure: true,
+                     secure: true,
                      // httpOnly: true,
                      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                     // domain: process.env.DOMAIN,
+                     domain: ".tasker-tool.com",
                      path: "/en/user",
                      maxAge: 3600000,
                   });
 
                   res.cookie("type", 'user', {
-                     // secure: true,
+                     secure: true,
                      // httpOnly: true,
                      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                     // domain: process.env.DOMAIN,
+                     domain: ".tasker-tool.com",
                      path: "/en/user",
                      maxAge: 3600000,
                   });
