@@ -229,7 +229,7 @@ const login = (req, res, next) => {
                      userName: result[0]["company_name"],
                   });
                   res.cookie("token", token, {
-                     secure: false,
+                     secure: true,
                      httpOnly: true,
                      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
                      // domain: process.env.DOMAIN,
