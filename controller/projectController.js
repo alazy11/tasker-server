@@ -17,7 +17,7 @@ const createPathTable = (req, res, next,projectId,project,space_id)=>{
       file_id int AUTO_INCREMENT, 
       file_path varchar(2000) NOT NULL,
       task_id int,
-      project_id varchar(200) NOT NULL', 
+      project_id varchar(200)', 
       employee_id int,
       name varchar(100) NOT NULL,
       type varchar(50) NOT NULL,
@@ -180,7 +180,7 @@ const create = (req, res, next)=>{
                pool.query(`CREATE TABLE project_folder_${projectId} (
 
                   folder_id int AUTO_INCREMENT,
-                  project_id varchar(200) NOT NULL,
+                  project_id varchar(200),
                   folder_path varchar(2000) NOT NULL,
                   name varchar(200) NOT NULL,
                   create_date DATETIME NOT NULL,
@@ -227,7 +227,7 @@ const create = (req, res, next)=>{
             pool.query(`CREATE TABLE project_folder_${projectId} (
 
                folder_id int AUTO_INCREMENT,
-               project_id varchar(200) NOT NULL,
+               project_id varchar(200),
                folder_path varchar(2000) NOT NULL,
                name varchar(200) NOT NULL,
                create_date DATETIME NOT NULL,
