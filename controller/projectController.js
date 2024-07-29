@@ -8,7 +8,7 @@ const path = require('node:path');
 const AdmZip = require("adm-zip");
 
 
-const createPathTable = (req, res, next,projectId,project)=>{
+const createPathTable = (req, res, next,projectId,project,space_id)=>{
 
    let folderTable = `project_folder_${projectId}`;
 
@@ -17,7 +17,7 @@ const createPathTable = (req, res, next,projectId,project)=>{
       file_id int AUTO_INCREMENT, 
       file_path varchar(2000) NOT NULL,
       task_id int,
-      project_id varchar(200) NOT NULL DEFAULT '${projectId}', 
+      project_id varchar(200) NOT NULL', 
       employee_id int,
       name varchar(100) NOT NULL,
       type varchar(50) NOT NULL,
@@ -40,12 +40,91 @@ const createPathTable = (req, res, next,projectId,project)=>{
          return;
       }
       
-      RESPONSE.successHandler(res, 200, {
-         ...project
-      });
+
+
+      pool.query(`CREATE TABLE project_pull_request_${projectId} (
+      
+         pull_id varchar(50),
+         file_path varchar(2000) NOT NULL,
+         name varchar(100) NOT NULL,
+         type varchar(50) NOT NULL,
+         upload_date DATETIME,
+         size varchar(30) NOT NULL,
+         kind varchar(50) DEFAULT 'file',
+
+         FOREIGN KEY (pull_id) REFERENCES pull_request_${space_id}(pull_id) ON UPDATE CASCADE ON DELETE CASCADE,
+         UNIQUE(file_path)
+   
+      )`,(error,result,fields)=>{
+         if (error) {
+            console.log("database Error",error);
+            next(AppError.create(error, 500, "database Error"));
+            return;
+         }
+         
+         RESPONSE.successHandler(res, 200, {
+            ...project
+         });
+   
+      })
+;
 
    })
 
+
+}
+
+
+
+const createTaskSetting = (req, res, next,projectID)=>{
+
+   pool.query(`CREATE TABLE task_setting_${projectID} (
+      employee_id int,
+      FOREIGN KEY (employee_id) REFERENCES employee(employee_id) ON UPDATE CASCADE ON DELETE CASCADE
+   )`,(error,result,fields)=>{
+      if (error) {
+         console.log("database Error",error);
+         next(AppError.create(error, 500, "database Error"));
+         return;
+      }
+
+      pool.query(`INSERT INTO task_setting_${projectID} (employee_id) SELECT employee_id FROM space_members WHERE pull_request = 0`,(error,result,fields)=>{
+         if (error) {
+            console.log("database Error",error);
+            next(AppError.create(error, 500, "database Error"));
+            return;
+         }
+         return;
+      })
+
+   })
+   
+}
+
+
+const createSetting = (req, res, next,projectID)=>{
+
+   pool.query(`CREATE TABLE project_setting_${projectID} (
+      employee_id int,
+      FOREIGN KEY (employee_id) REFERENCES employee(employee_id) ON UPDATE CASCADE ON DELETE CASCADE
+   )`,(error,result,fields)=>{
+      if (error) {
+         console.log("database Error",error);
+         next(AppError.create(error, 500, "database Error"));
+         return;
+      }
+
+      pool.query(`INSERT INTO project_setting_${projectID} (employee_id) SELECT employee_id FROM space_members WHERE show_project_files = 0`,(error,result,fields)=>{
+         if (error) {
+            console.log("database Error",error);
+            next(AppError.create(error, 500, "database Error"));
+            return;
+         }
+         return;
+      })
+
+   })
+   
 }
 
 
@@ -57,13 +136,11 @@ const create = (req, res, next)=>{
    const project = [projectId, req.user.id, manager, title, desc, state, space_id, priority,phases,startDate,endDate ]
    let projectTag = [];
    const folderPath = path.join(req.FolderPath, 'uploads', 'company', `${req.user.id}`,`space`,`${space_id}`,'project',`${projectId}`,'public');
+   const folderPathPull = path.join(req.FolderPath, 'uploads', 'company', `${req.user.id}`,`space`,`${space_id}`,'project',`${projectId}`,'pullRequest');
    const folderPathDatabase = path.join('uploads', 'company', `${req.user.id}`,`space`,`${space_id}`,'project',`${projectId}`,'public');
-   console.log("folderPath",folderPath);
-
-
+   const folderPathTask= path.join(req.FolderPath, 'uploads', 'company', `${req.user.id}`,`space`,`${space_id}`,'project',`${projectId}`,`task`);
 
    try{
-
       selectedTags?.forEach(element => {
          projectTag.push([projectId,element])
       });
@@ -79,6 +156,9 @@ const create = (req, res, next)=>{
          return;
       }
 
+      createSetting(req, res, next,projectId);
+      createTaskSetting(req, res, next,projectId);
+
          if(selectedTags.length > 0) {
             pool.query('INSERT INTO project_tag (project_id,tag_name) VALUES ?',[projectTag],(error,result,fields)=>{
                if (error) {
@@ -90,11 +170,17 @@ const create = (req, res, next)=>{
                fs.mkdir(folderPath,{ recursive: true },(err)=>{
                   console.log('folder error ...',err)
                });
+               fs.mkdir(folderPathTask,{ recursive: true },(err)=>{
+                  console.log('folder error ...',err)
+               });
+               fs.mkdir(folderPathPull,{ recursive: true },(err)=>{
+                  console.log('folder error ...',err)
+               });
 
                pool.query(`CREATE TABLE project_folder_${projectId} (
 
                   folder_id int AUTO_INCREMENT,
-                  project_id varchar(200) NOT NULL DEFAULT '${projectId}',
+                  project_id varchar(200) NOT NULL',
                   folder_path varchar(2000) NOT NULL,
                   name varchar(200) NOT NULL,
                   create_date DATETIME NOT NULL,
@@ -125,7 +211,7 @@ const create = (req, res, next)=>{
                         next(AppError.create(error, 500, "database Error"));
                         return;
                      }
-                     createPathTable(req, res, next,projectId,project);
+                     createPathTable(req, res, next,projectId,project,space_id);
                   })
 
                })
@@ -141,7 +227,7 @@ const create = (req, res, next)=>{
             pool.query(`CREATE TABLE project_folder_${projectId} (
 
                folder_id int AUTO_INCREMENT,
-               project_id varchar(200) NOT NULL DEFAULT '${projectId}',
+               project_id varchar(200) NOT NULL',
                folder_path varchar(2000) NOT NULL,
                name varchar(200) NOT NULL,
                create_date DATETIME NOT NULL,
@@ -172,7 +258,7 @@ const create = (req, res, next)=>{
                      next(AppError.create(error, 500, "database Error"));
                      return;
                   }
-                  createPathTable(req, res, next,projectId,project);
+                  createPathTable(req, res, next,projectId,project,space_id);
                })
 
             })
@@ -208,7 +294,7 @@ const AddPhases = (req, res, next) => {
             return;
          }
    
-         // console.log("project result.....",result)
+         console.log("project result.....",result)
          RESPONSE.successHandler(res, 200, {
             ...result
          });
@@ -264,7 +350,6 @@ const deleteProject = (req, res, next) => {
 )
 
 
-
    pool.query(`DROP TABLE project_file_${projectID}`,(error,result,fields)=>{
       if (error) {
          console.log("database Error",error);
@@ -279,6 +364,25 @@ const deleteProject = (req, res, next) => {
             return;
          }
 
+      pool.query(`DROP TABLE project_setting_${projectID}`,[projectID],(error,result,fields)=>{
+         if (error) {
+            console.log("database Error",error);
+            next(AppError.create(error, 500, "database Error"));
+            return;
+      }
+      pool.query(`DROP TABLE project_pull_request_${projectID}`,[projectID],(error,result,fields)=>{
+         if (error) {
+            console.log("database Error",error);
+            next(AppError.create(error, 500, "database Error"));
+            return;
+      }
+      pool.query(`DROP TABLE task_setting_${projectID}`,[projectID],(error,result,fields)=>{
+         if (error) {
+            console.log("database Error",error);
+            next(AppError.create(error, 500, "database Error"));
+            return;
+      }
+
       pool.query(`DELETE FROM project WHERE project_id = ? `,[projectID],(error,result,fields)=>{
          if (error) {
             console.log("database Error",error);
@@ -292,14 +396,17 @@ const deleteProject = (req, res, next) => {
       .then(() => console.log('Folder deletion completed.'))
       .catch((err) => console.error('Error deleting folder:', err));
 
-         // console.log("project result.....",result)
+         console.log("project result.....",result)
          RESPONSE.successHandler(res, 200, {
             projectID
          });
    
    });
+   });
+   });
 
    
+   });
    });
 
 });
@@ -326,7 +433,7 @@ const getAllProjects = (req, res, next) => {
          return;
       }
 
-      // console.log("project result.....",result)
+      console.log("project result.....",result)
       pool.query(
          `SELECT COUNT(*) AS count FROM project WHERE space_id = ?`,
          [spaceID],
@@ -439,11 +546,6 @@ const createFolder = (req, res, next) => {
       folderPathDatabase = path.join('uploads', 'company', `${req.user.id}`,`space`,`${spaceID}`,'project',`${projectID}`,`${folderName}`);
    }
 
-
-   // console.log("folderPa.....",folderPa)
-   // console.log("folderPath",folderPath)
-   // console.log("folderPathDatabase",folderPathDatabase)
-
    pool.query(`INSERT INTO project_folder_${projectID} SET
    project_id = ?,
    folder_path = ?,
@@ -539,6 +641,37 @@ fs.rename(file_path, new_file_path, (err) => {
 }
 
 });
+
+}
+
+
+const getFolder = (req, res, next)=>{
+
+   console.log('req.body',req.body);
+
+   let projectID = req.params.projectID;
+   let FolderName = req.params.FolderName;
+
+   console.log("projectID",req.params.projectID);
+   console.log("FolderName",req.params.FolderName);
+
+   pool.query(`SELECT folder_path FROM project_folder_${projectID}
+   WHERE name = ?
+   `,[FolderName],(error,result,fields)=>{
+   if (error) {
+      console.log("database Error",error);
+      next(AppError.create(error, 500, "database Error"));
+      return;
+   }
+
+   console.log("folder_path",result)
+
+   RESPONSE.successHandler(res, 200, {
+      ...result[0]
+   });
+
+})
+
 
 }
 
@@ -754,8 +887,134 @@ const getSubFolderAndFile = (req, res, next)=>{
 
 
 
-// const createTask = 
+const getPreventUserToSeeFile = (req, res, next)=>{
 
+   const projectID = req.params.projectID;
+
+      pool.query(`
+         SELECT employee.employee_id,employee.job_for,user.user_id,user.profile_path, user.public_name, user.email, user.room_ID FROM employee INNER JOIN user USING(user_id) WHERE employee.employee_id IN(SELECT employee_id FROM project_setting_${projectID}) `,(error,result,fields)=>{
+      // pool.query(`INSERT INTO project_setting_${projectID} SET employee_id = ?`,[employee],(error,result,fields)=>{
+         if (error) {
+            console.log("database Error",error);
+            next(AppError.create(error, 500, "database Error"));
+            return;
+         }
+
+         RESPONSE.successHandler(res, 200, result);
+
+      })
+
+   
+}
+
+const getPreventUserToPullRequest = (req, res, next)=>{
+
+   const projectID = req.params.projectID;
+
+      pool.query(`
+         SELECT employee.employee_id,employee.job_for,user.user_id,user.profile_path, user.public_name, user.email, user.room_ID FROM employee INNER JOIN user USING(user_id) WHERE employee.employee_id IN(SELECT employee_id FROM task_setting_${projectID}) `,(error,result,fields)=>{
+      // pool.query(`INSERT INTO project_setting_${projectID} SET employee_id = ?`,[employee],(error,result,fields)=>{
+         if (error) {
+            console.log("database Error",error);
+            next(AppError.create(error, 500, "database Error"));
+            return;
+         }
+
+         RESPONSE.successHandler(res, 200, result);
+
+      })
+
+   
+}
+
+
+
+const preventUserToSeeFile = (req, res, next)=>{
+
+   const {employee} = req.body;
+   const projectID = req.params.projectID;
+
+   console.log("employee",req.body)
+
+      pool.query(`INSERT INTO project_setting_${projectID} SET employee_id = ?`,[employee],(error,result,fields)=>{
+         if (error) {
+            console.log("database Error",error);
+            next(AppError.create(error, 500, "database Error"));
+            return;
+         }
+
+         RESPONSE.successHandler(res, 200, {
+            message:'employee has been blocked successfully.'
+         });
+
+      })
+
+}
+
+const preventUserToPullRequest = (req, res, next)=>{
+
+   const {employee} = req.body;
+   const projectID = req.params.projectID;
+
+   console.log("employee",req.body)
+
+      pool.query(`INSERT INTO task_setting_${projectID} SET employee_id = ?`,[employee],(error,result,fields)=>{
+         if (error) {
+            console.log("database Error",error);
+            next(AppError.create(error, 500, "database Error"));
+            return;
+         }
+
+         RESPONSE.successHandler(res, 200, {
+            message:'employee has been blocked successfully.'
+         });
+
+      })
+
+}
+
+
+
+const allowUserToSeeFile = (req, res, next)=>{
+
+   const employee = req.query.employee;
+   const projectID = req.params.projectID;
+
+      pool.query(`DELETE FROM project_setting_${projectID} WHERE employee_id = ?`,[employee],(error,result,fields)=>{
+         if (error) {
+            console.log("database Error",error);
+            next(AppError.create(error, 500, "database Error"));
+            return;
+         }
+
+         RESPONSE.successHandler(res, 200, {
+            message:'employee has been ALLOWED successfully.'
+         });
+
+      })
+
+}
+
+
+const allowUserToPullRequest = (req, res, next)=>{
+
+   const employee = req.query.employee;
+   const projectID = req.params.projectID;
+
+      pool.query(`DELETE FROM task_setting_${projectID} WHERE employee_id = ?`,[employee],(error,result,fields)=>{
+         if (error) {
+            console.log("database Error",error);
+            next(AppError.create(error, 500, "database Error"));
+            return;
+         }
+
+         RESPONSE.successHandler(res, 200, {
+            message:'employee has been ALLOWED successfully.'
+         });
+
+      })
+
+}
 
 
 
@@ -777,5 +1036,13 @@ module.exports = {
    renameFolder,
    deleteFolder,
    downloadFile,
-   downloadFolder
+   downloadFolder,
+   deleteFolderRecursive,
+   getFolder,
+   preventUserToSeeFile,
+   getPreventUserToSeeFile,
+   allowUserToSeeFile,
+   getPreventUserToPullRequest,
+   preventUserToPullRequest,
+   allowUserToPullRequest
 }

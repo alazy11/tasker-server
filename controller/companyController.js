@@ -5,8 +5,14 @@ const { hash, compare } = require("bcrypt");
 const AppError = require('../util/customError');
 const {validationResult} = require('express-validator');
 const generatSecretKey = require('../util/generatSecretKey');
-const transporter = require('../util/emailService');
-require('dotenv').config();
+// const transporter = require('../util/emailService');
+// require('dotenv').config();
+// const Recipient = require("mailersend").Recipient;
+// const EmailParams = require("mailersend").EmailParams;
+// const MailerSend = require("mailersend").MailerSend;
+// const Sender = require("mailersend").Sender;
+
+const nodemailer = require("nodemailer");
 
 
 const create = (req, res, next) => {
@@ -57,10 +63,29 @@ const create = (req, res, next) => {
                   secure: true,
                   httpOnly: true,
                   sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                  domain: process.env.DOMAIN,
+                  // domain: process.env.DOMAIN,
                   path: "/en/company",
                   maxAge: 3600000,
                });
+
+               res.cookie("roomId",roomId, {
+                  secure: true,
+                  // httpOnly: true,
+                  sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
+                  // domain: process.env.DOMAIN,
+                  path: "/en/company",
+                  maxAge: 86400000,
+               });
+
+               res.cookie("type", 'company', {
+                  secure: true,
+                  // httpOnly: true,
+                  sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
+                  // domain: process.env.DOMAIN,
+                  path: "/en/company",
+                  maxAge: 3600000,
+               });
+
                RESPONSE.successHandler(res, 200, {
                   user: userName,
                   token: res.getHeader("Set-Cookie"),
@@ -203,41 +228,37 @@ const login = (req, res, next) => {
                      id: result[0]["company_id"],
                      userName: result[0]["company_name"],
                   });
-               
-                  if(process.env.NODE_ENV === "development")
                   res.cookie("token", token, {
-                     secure: true,
-                     httpOnly: true,
-                     sameSite:"lax",
-                     domain: process.env.DOMAIN,
-                     path: "/en/company",
-                     maxAge: 86400000,
-                  });
-                  if(process.env.NODE_ENV === "production")
-                     res.cookie("token", token, {
-                        secure: true,
-                        httpOnly: true,
-                        sameSite: "none",
-                        // domain: process.env.DOMAIN,
-                        // path: "/en/company",
-                        maxAge: 86400000,
-                     });
-
-
-
-                  res.cookie("roomId", result[0]["room_ID"], {
-                     secure: true,
+                     secure: false,
                      httpOnly: true,
                      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
                      // domain: process.env.DOMAIN,
+                     path: "/en/company",
                      // path: "/en/company",
+                     maxAge: 86400000,
+                  });
+
+                  res.cookie("roomId", result[0]["room_ID"], {
+                     secure: true,
+                     // httpOnly: true,
+                     sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
+                     // domain: process.env.DOMAIN,
+                     path: "/en/company",
+                     maxAge: 86400000,
+                  });
+
+                  res.cookie("type", 'company', {
+                     secure: true,
+                     // httpOnly: true,
+                     sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
+                     // domain: process.env.DOMAIN,
+                     path: "/en/company",
                      maxAge: 86400000,
                   });
 
                   RESPONSE.successHandler(res, 200, {
                      id: result[0]["company_id"],
                      userName: result[0]["company_name"],
-                     cookies: res.getHeaders()['set-cookie']
                   });
                   return;
                   }
@@ -260,9 +281,109 @@ const login = (req, res, next) => {
    );
 };
 
-const getCompany = (req, res, next)=>{
+
+const logout = (req, res, next) => {
+   res.cookie("token", '', {
+      secure: false,
+      httpOnly: true,
+      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
+      // domain: process.env.DOMAIN,
+      path: "/en/company",
+      // path: "/en/company",
+      maxAge: 0,
+   });
+
+   res.cookie("roomId", '', {
+      secure: true,
+      // httpOnly: true,
+      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
+      // domain: process.env.DOMAIN,
+      path: "/en/company",
+      maxAge: 0,
+   });
+
+   res.cookie("type", 'company', {
+      secure: true,
+      // httpOnly: true,
+      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
+      // domain: process.env.DOMAIN,
+      path: "/en/company",
+      maxAge: 0,
+   });
+
+   RESPONSE.successHandler(res, 200, "logout successfully.");
+}
+
+
+async function send() {
+   // const mailerSend = new MailerSend({
+   //    apiKey: process.env.API_KEY,
+   //  });
+    
+   //  const sentFrom = new Sender("MS_apHeAL@trial-zr6ke4njjymgon12.mlsender.net", "Tasker");
+    
+   //  const recipients = [
+   //    new Recipient("alazyalhimeari11@gmail.com", "alazy")
+   //  ];
+   //  console.log('ok send email......')
+   //  const emailParams = new EmailParams()
+   //    .setFrom(sentFrom)
+   //    .setTo(recipients)
+   //    .setReplyTo(sentFrom)
+   //    .setSubject("This is a Subject")
+   //    .setHtml("<strong>This is the HTML content</strong>")
+   //    .setText("This is the text content");
    
-   console.log('user company.....',req.user);
+   //  try {
+   //     await mailerSend.email.send(emailParams);
+   //     console.log('ok send email')
+   //  } catch(err) {
+   //    console.log(err)
+   //  }
+
+   const transporter = nodemailer.createTransport({
+      host: "smtp.mailersend.net",
+      port: 587,
+      secure: false, // Use `true` for port 465, `false` for all other ports
+      auth: {
+        user: "MS_apHeAL@trial-zr6ke4njjymgon12.mlsender.net",
+        pass: "yUcv4tPhAPf3Gg1f",
+      },
+    });
+
+   //  const info = await
+     transporter.sendMail({
+      from: '"Maddison Foo Koch 👻" <MS_apHeAL@trial-zr6ke4njjymgon12.mlsender.net>', // sender address
+      to: "alazyalhimeari11@gmail.com", // list of receivers
+      subject: "Hello ✔", // Subject line
+      text: "Hello world?", // plain text body
+      html: "<b>Hello world?</b>", // html body
+    },
+    (error, info) => {
+      if (error) {
+        console.error('Error occurred while sending email:', error);
+      } else {
+        console.log('Email sent successfully:', info.response);
+      }
+    }
+   );
+  
+
+   //  console.log("Message sent: %s", info.messageId);
+
+
+}
+
+
+const getCompany = async (req, res, next)=>{
+
+   // try{
+   //    await send();
+   // } catch(err) {
+   //    console.log(err)
+   // }
+
+   console.log('user',req.user);
 
    pool.query(
       "SELECT * FROM company WHERE company_name = ? ",
@@ -286,6 +407,64 @@ const getCompany = (req, res, next)=>{
    );
 
 }
+
+
+const getCompanyInfo = async (req, res, next)=>{
+
+   const result = {};
+   const user = req.user.id;
+
+   pool.query(
+      `SELECT COUNT(*) AS count FROM space WHERE company_id = ?`,
+      [user],
+      (countError, countResult) => {
+         if (countError) {
+            console.log("count error", countError);
+            next(AppError.create(countError, 500, "database Error"));
+         }
+
+         result.spaces = countResult[0].count;
+
+         pool.query(
+            `SELECT COUNT(*) AS count FROM project WHERE company_id = ?`,
+            [user],
+            (countError, countResult) => {
+               if (countError) {
+                  console.log("count error", countError);
+                  next(AppError.create(countError, 500, "database Error"));
+                  return;
+               }
+
+               result.projects = countResult[0].count;
+
+               pool.query(
+                  `SELECT COUNT(*) AS count FROM employee WHERE company_id = ?`,
+                  [user],
+                  (countError, countResult) => {
+                     if (countError) {
+                        console.log("count error", countError);
+                        next(AppError.create(countError, 500, "database Error"));
+                     }
+         
+                     result.employees = countResult[0].count;
+          
+                     RESPONSE.successHandler(res, 200, {
+                        result: {
+                           ...result
+                        }
+                     });
+                  }
+               );
+
+            }
+         );
+         
+      }
+   );
+
+}
+
+
 
 const getRoomId =  (req, res, next)=>{
    console.log('user',req.user);
@@ -320,6 +499,44 @@ const getRoomId =  (req, res, next)=>{
    );
 
 }
+
+
+const getAllRoomId =  (req, res, next)=>{
+
+   
+
+   pool.query(
+      "SELECT room_ID FROM company WHERE company_name = ? ",
+      [req.user.userName],
+      (error, result, fields) => {
+         if (error) {
+            console.log(error);
+            next(AppError.create(error, 500, "database Error"));
+         }
+         // console.log(result);
+         if (result.length > 0) {
+
+            res.cookie("roomId", result[0]["room_ID"], {
+               // secure: true,
+               // httpOnly: true,
+               sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
+               domain: process.env.DOMAIN,
+               path: "/en/company",
+               maxAge: 86400000,
+            });
+            RESPONSE.successHandler(res, 200, {
+               ...result[0]
+            });
+         } else {
+            RESPONSE.failHandler(res, 500, {
+               email: "this user not exist!",
+            });
+         }
+      }
+   );
+
+}
+
 
 
 const orderJoin = (req, res, next)=>{
@@ -491,6 +708,38 @@ const searchEmployee = (req, res, next)=>{
    );
 }
 
+const getUserInformation = (req, res, next)=>{
+   // console.log('user',req.user);
+   let user = req.query.user;
+
+   // console.log("user name/ / // / ///",user);
+
+   pool.query(
+      "SELECT * FROM user WHERE room_ID = ? ",
+      [user],
+      (error, result, fields) => {
+         if (error) {
+            console.log(error);
+            next(AppError.create(error, 500, "database Error"));
+         }
+         console.log(result);
+         if (result.length > 0) {
+            RESPONSE.successHandler(res, 200, {
+               ...result[0]
+            });
+         } else {
+            RESPONSE.failHandler(res, 500, {
+               email: "this user not exist!",
+            });
+         }
+      }
+   );
+
+}
+
+
+
+
 const deleteEmployee = (req, res, next) => {
 
    const user = req.user;
@@ -510,6 +759,146 @@ const deleteEmployee = (req, res, next) => {
 }
 
 
+const createNote = (req, res, next) => {
+
+   const user = req.user;
+   const {desc,date,title} = req.body;
+
+   
+      pool.query('INSERT INTO company_note SET content = ?,	create_date = ?,	company_id = ?, title = ?',[desc,date,user.id,title],(error,result,fields)=>{
+            if (error) {
+               console.log(error);
+               next(AppError.create(error, 500, "database Error"));
+            }
+            // console.log("result...", result);
+            RESPONSE.successHandler(res, 200, {
+               message: "created ok"
+            });
+         }
+      );
+}
+
+const getAllNote = (req, res, next) => {
+
+   const user = req.user;
+   
+      pool.query('SELECT * FROM company_note WHERE	company_id = ?',[user.id],(error,result,fields)=>{
+            if (error) {
+               console.log(error);
+               next(AppError.create(error, 500, "database Error"));
+            }
+            // console.log("result...", result);
+            RESPONSE.successHandler(res, 200, result);
+         }
+      );
+}
+
+const editNote = (req, res, next) => {
+
+   const user = req.user;
+   const {desc,date,title,note_id} = req.body;
+
+   
+      pool.query('UPDATE company_note SET content = ?, create_date = ?,	company_id = ?, title = ? WHERE note_id = ?',[desc,date,user.id,title,note_id],(error,result,fields)=>{
+            if (error) {
+               console.log(error);
+               next(AppError.create(error, 500, "database Error"));
+            }
+            // console.log("result...", result);
+            RESPONSE.successHandler(res, 200, {
+               message: "edited ok"
+            });
+         }
+      );
+}
+
+
+const deleteNote = (req, res, next) => {
+
+   const user = req.user;
+   const {note_id} = req.query;
+
+   
+      pool.query('DELETE FROM company_note WHERE note_id = ?',[note_id],(error,result,fields)=>{
+            if (error) {
+               console.log(error);
+               next(AppError.create(error, 500, "database Error"));
+            }
+            // console.log("result...", result);
+            RESPONSE.successHandler(res, 200, {
+               message: "deleted ok"
+            });
+         }
+      );
+}
+
+
+
+
+const uploadClip = (req, res, next)=> {
+
+   const folderPath = req.folderPath;
+   const fileName = req.fileName;
+      RESPONSE.successHandler(res, 200, {
+         folderPath,
+         fileName
+      });
+
+}
+
+
+const saveClip = (req, res, next) => {
+
+   const user = req.user;
+   const {path,date,title} = req.body;
+
+      pool.query('INSERT INTO company_clip SET path = ?,	create_date = ?,	company_id = ?, title = ?',[path,date,user.id,title],(error,result,fields)=>{
+            if (error) {
+               console.log(error);
+               next(AppError.create(error, 500, "database Error"));
+            }
+            // console.log("result...", result);
+            RESPONSE.successHandler(res, 200, {
+               message: "created ok"
+            });
+         }
+      );
+}
+
+
+const getAllClip = (req, res, next) => {
+
+   const user = req.user;
+
+      pool.query('SELECT * FROM company_clip WHERE company_id = ?',[user.id],(error,result,fields)=>{
+            if (error) {
+               console.log(error);
+               next(AppError.create(error, 500, "database Error"));
+            }
+            RESPONSE.successHandler(res, 200, result);
+         }
+      );
+}
+
+
+const getClip = (req, res, next) => {
+
+   const user = req.user;
+   const clipID = req.params.clipID;
+
+      pool.query('SELECT * FROM company_clip WHERE clip_id = ?',[clipID],(error,result,fields)=>{
+            if (error) {
+               console.log(error);
+               next(AppError.create(error, 500, "database Error"));
+            }
+            RESPONSE.successHandler(res, 200, result[0]);
+         }
+      );
+}
+
+
+
+
 
 module.exports = {
    create,
@@ -523,5 +912,16 @@ module.exports = {
    searchUser,
    orderJoin,
    deleteEmployee,
-   searchEmployee
+   searchEmployee,
+   getCompanyInfo,
+   getUserInformation,
+   createNote,
+   getAllNote,
+   editNote,
+   deleteNote,
+   uploadClip,
+   saveClip,
+   getAllClip,
+   getClip,
+   logout
 }

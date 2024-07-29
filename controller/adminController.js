@@ -4,7 +4,7 @@ const createToken = require("../util/creatToken");
 const { hash, compare } = require("bcrypt");
 const AppError = require("../util/customError");
 const { validationResult } = require("express-validator");
-require('dotenv').config();
+
 
 
 const login = (req, res, next) => {

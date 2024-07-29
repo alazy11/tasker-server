@@ -15,7 +15,7 @@ let userValidator = [
    body('userName','user name has already exist !').custom(async value=>{
       try{
          const res = await queryPool(value,'SELECT user_name FROM user WHERE user_name = ? ','user name has already exist !');
-         console.log('result===',res)
+         // console.log('result===',res)
       }catch(error){
          throw error
       }
