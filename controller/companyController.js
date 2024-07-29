@@ -765,8 +765,8 @@ const createNote = (req, res, next) => {
    const {desc,date,title} = req.body;
 
    
-      pool.query('INSERT INTO company_note SET content = ?,	create_date = ?,	company_id = ?, title = ?',[desc,date,user.id,title],(error,result,fields)=>{
-      // pool.query(`INSERT INTO company_note (content, create_date, company_id, title) VALUES (${desc},STR_TO_DATE('${date}', '%Y-%m-%dT%H:%i:%s.%fZ'),${user.id},${title})`,(error,result,fields)=>{
+      // pool.query('INSERT INTO company_note SET content = ?,	create_date = ?,	company_id = ?, title = ?',[desc,date,user.id,title],(error,result,fields)=>{
+      pool.query(`INSERT INTO company_note (content, create_date, company_id, title) VALUES (${desc},${date},${user.id},${title})`,(error,result,fields)=>{
             if (error) {
                console.log(error);
                next(AppError.create(error, 500, "database Error"));
