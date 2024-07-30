@@ -17,7 +17,7 @@ const createPathTable = (req, res, next,projectId,project,space_id)=>{
       file_id int AUTO_INCREMENT, 
       file_path varchar(2000) NOT NULL,
       task_id int,
-      project_id varchar(200)', 
+      project_id varchar(200) NOT NULL REFERENCES project(project_id) ON UPDATE CASCADE ON DELETE CASCADE', 
       employee_id int,
       name varchar(100) NOT NULL,
       type varchar(50) NOT NULL,
@@ -27,7 +27,6 @@ const createPathTable = (req, res, next,projectId,project,space_id)=>{
       kind varchar(50) DEFAULT 'file',
 
       PRIMARY KEY (file_id),
-      FOREIGN KEY (project_id) REFERENCES project(project_id) ON UPDATE CASCADE ON DELETE CASCADE,
       FOREIGN KEY (task_id) REFERENCES task(task_id) ON UPDATE CASCADE ON DELETE CASCADE,
       FOREIGN KEY (folder_id) REFERENCES ${folderTable}(folder_id) ON UPDATE CASCADE ON DELETE CASCADE,
       FOREIGN KEY (employee_id) REFERENCES employee(employee_id) ON UPDATE CASCADE,
@@ -44,7 +43,7 @@ const createPathTable = (req, res, next,projectId,project,space_id)=>{
 
       pool.query(`CREATE TABLE project_pull_request_${projectId} (
       
-         pull_id varchar(50),
+         pull_id varchar(50) NOT NULL REFERENCES pull_request_${space_id}(pull_id) ON UPDATE CASCADE ON DELETE CASCADE,
          file_path varchar(2000) NOT NULL,
          name varchar(100) NOT NULL,
          type varchar(50) NOT NULL,
@@ -52,7 +51,6 @@ const createPathTable = (req, res, next,projectId,project,space_id)=>{
          size varchar(30) NOT NULL,
          kind varchar(50) DEFAULT 'file',
 
-         FOREIGN KEY (pull_id) REFERENCES pull_request_${space_id}(pull_id) ON UPDATE CASCADE ON DELETE CASCADE,
          UNIQUE(file_path)
    
       )`,(error,result,fields)=>{
@@ -180,7 +178,7 @@ const create = (req, res, next)=>{
                pool.query(`CREATE TABLE project_folder_${projectId} (
 
                   folder_id int AUTO_INCREMENT,
-                  project_id varchar(200),
+                  project_id varchar(200) NOT NULL REFERENCES project(project_id) ON UPDATE CASCADE ON DELETE CASCADE,
                   folder_path varchar(2000) NOT NULL,
                   name varchar(200) NOT NULL,
                   create_date DATETIME NOT NULL,
@@ -188,7 +186,6 @@ const create = (req, res, next)=>{
                   kind varchar(50) DEFAULT 'folder',
 
                   PRIMARY KEY (folder_id),
-                  FOREIGN KEY (project_id) REFERENCES project(project_id) ON UPDATE CASCADE ON DELETE CASCADE,
                   FOREIGN KEY (parent) REFERENCES project_folder_${projectId}(folder_id) ON UPDATE CASCADE ON DELETE CASCADE,
                   UNIQUE(name)
 
@@ -227,7 +224,7 @@ const create = (req, res, next)=>{
             pool.query(`CREATE TABLE project_folder_${projectId} (
 
                folder_id int AUTO_INCREMENT,
-               project_id varchar(200),
+               project_id varchar(200) NOT NULL REFERENCES project(project_id) ON UPDATE CASCADE ON DELETE CASCADE,
                folder_path varchar(2000) NOT NULL,
                name varchar(200) NOT NULL,
                create_date DATETIME NOT NULL,
@@ -235,7 +232,6 @@ const create = (req, res, next)=>{
                kind varchar(50) DEFAULT 'folder',
 
                PRIMARY KEY (folder_id),
-               FOREIGN KEY (project_id) REFERENCES project(project_id) ON UPDATE CASCADE ON DELETE CASCADE,
                FOREIGN KEY (parent) REFERENCES project_folder_${projectId}(folder_id) ON UPDATE CASCADE ON DELETE CASCADE,
                UNIQUE(name)
 

@@ -46,7 +46,7 @@ const createTask = (req, res, next,spaceID)=>{
    pool.query(`CREATE TABLE task_${spaceID} (
       
       task_id varchar(50),
-      project_id varchar(200) NOT NULL, 
+      project_id varchar(200) NOT NULL REFERENCES project(project_id) ON UPDATE CASCADE ON DELETE CASCADE, 
       user_id int,
       folder_path varchar(2000),
       download_folder_path varchar(2000),
@@ -59,7 +59,6 @@ const createTask = (req, res, next,spaceID)=>{
       
 
       PRIMARY KEY (task_id),
-      FOREIGN KEY (project_id) REFERENCES project(project_id) ON UPDATE CASCADE ON DELETE CASCADE,
       FOREIGN KEY (user_id) REFERENCES user(user_id) ON UPDATE CASCADE
 
    )`,(error,result,fields)=>{
@@ -74,12 +73,11 @@ const createTask = (req, res, next,spaceID)=>{
          pull_date DATE,
          description varchar(5000),
          task_id varchar(50),	
-         project_id varchar(200) NOT NULL, 
+         project_id varchar(200) NOT NULL REFERENCES project(project_id) ON UPDATE CASCADE ON DELETE CASCADE, 
          employee_id int,
          is_accepted BOOLEAN DEFAULT false,
 
       PRIMARY KEY (pull_id),
-      FOREIGN KEY (project_id) REFERENCES project(project_id) ON UPDATE CASCADE ON DELETE CASCADE,
       FOREIGN KEY (task_id) REFERENCES task_${spaceID}(task_id) ON UPDATE CASCADE ON DELETE CASCADE
          )
          `,(error,result,fields)=>{
