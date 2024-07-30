@@ -127,7 +127,7 @@ const createChat = (req, res, next,spaceID)=>{
    pool.query(`CREATE TABLE space_message_${spaceID} (
       
       ms_id int AUTO_INCREMENT,
-      room_id varchar(150), 
+      room_id varchar(100), 
       user_id int,
       company_id int,
       send_date DATE NOT NULL,
