@@ -138,7 +138,6 @@ const createChat = (req, res, next,spaceID)=>{
       name varchar(100),
 
       PRIMARY KEY (ms_id),
-      FOREIGN KEY (room_id) REFERENCES space(room_id) ON UPDATE CASCADE ON DELETE CASCADE,
       FOREIGN KEY (user_id) REFERENCES user(user_id) ON UPDATE CASCADE,
       FOREIGN KEY (company_id) REFERENCES company(company_id) ON UPDATE CASCADE
 
