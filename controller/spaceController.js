@@ -182,8 +182,6 @@ const create = (req, res, next) => {
 
    req.body.spaceID = spaceID;
 
-   setMemberInSpace(req,res,next);
-
    // hash(password, 10, (err, hash) => {
       const space = [
          spaceID,
@@ -202,6 +200,9 @@ const create = (req, res, next) => {
                console.log(error);
                next(AppError.create(error, 500, "database Error"));
             }
+
+            
+            setMemberInSpace(req,res,next);
 
             pool.query('INSERT INTO space_manager_role SET space_id = ?',[spaceID],(error,result,fields)=>{
                if (error) {

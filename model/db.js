@@ -8,12 +8,6 @@ const pool = mysql.createPool({
    database        : process.env.DB_NAME
 });
 
-// const connection = mysql.createConnection({
-//    host            : 'localhost',
-//    user            : 'root',
-//    password        : '',
-//    database        : 'tasker'
-// });
 
 // connection.connect(function(err){
 //    if(err){

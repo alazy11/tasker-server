@@ -214,7 +214,7 @@ const login = (req, res, next) => {
             console.log(error);
             next(AppError.create(error, 500, "database Error"));
          }
-         if (result.length > 0) {
+         if (result?.length > 0) {
 
             compare(password, result[0]["company_password"], (err, resul) => {
 
@@ -230,9 +230,10 @@ const login = (req, res, next) => {
                   });
                   res.cookie("token", token, {
                      secure: true,
+                     // secure: false,
                      httpOnly: true,
                      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                     domain: ".tasker-tool.com",
+                     domain: process.env.DOMAIN,
                      path: "/en/company",
                      // path: "/en/company",
                      maxAge: 86400000,
@@ -240,18 +241,19 @@ const login = (req, res, next) => {
 
                   res.cookie("roomId", result[0]["room_ID"], {
                      secure: true,
+                     // secure: false,
                      // httpOnly: true,
-                     sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                     domain: ".tasker-tool.com",
+                     domain: process.env.DOMAIN,
                      path: "/en/company",
                      maxAge: 86400000,
                   });
 
                   res.cookie("type", 'company', {
                      secure: true,
+                     // secure: false,
                      // httpOnly: true,
                      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                     domain: ".tasker-tool.com",
+                     domain: process.env.DOMAIN,
                      path: "/en/company",
                      maxAge: 86400000,
                   });
