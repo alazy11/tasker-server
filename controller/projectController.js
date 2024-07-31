@@ -17,7 +17,7 @@ const createPathTable = (req, res, next,projectId,project,space_id)=>{
       file_id int AUTO_INCREMENT, 
       file_path varchar(2000) NOT NULL,
       task_id int,
-      project_id varchar(200) NOT NULL REFERENCES project(project_id) ON UPDATE CASCADE ON DELETE CASCADE', 
+      project_id varchar(200) NOT NULL REFERENCES project(project_id) ON UPDATE CASCADE ON DELETE CASCADE, 
       employee_id int,
       name varchar(100) NOT NULL,
       type varchar(50) NOT NULL,
