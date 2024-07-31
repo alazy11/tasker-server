@@ -15,7 +15,7 @@ const createPathTable = (req, res, next,projectId,project,space_id)=>{
    pool.query(`CREATE TABLE project_file_${projectId} (
       
       file_id int AUTO_INCREMENT, 
-      file_path varchar(2000) NOT NULL,
+      file_path varchar(1000) NOT NULL,
       task_id int,
       project_id varchar(200) NOT NULL REFERENCES project(project_id) ON UPDATE CASCADE ON DELETE CASCADE, 
       employee_id int,
@@ -44,7 +44,7 @@ const createPathTable = (req, res, next,projectId,project,space_id)=>{
       pool.query(`CREATE TABLE project_pull_request_${projectId} (
       
          pull_id varchar(50) NOT NULL REFERENCES pull_request_${space_id}(pull_id) ON UPDATE CASCADE ON DELETE CASCADE,
-         file_path varchar(2000) NOT NULL,
+         file_path varchar(1000) NOT NULL,
          name varchar(100) NOT NULL,
          type varchar(50) NOT NULL,
          upload_date DATETIME,
