@@ -17,7 +17,11 @@ const clipPath= async(req, res, next)=> {
  
  
     fs.mkdir(folderPathTask,{ recursive: true },(err)=>{
-        console.log('folder error ...',err)
+        if(err) {
+            console.log('folder error ...',err)
+        } else {
+            console.log(`folder have been created successfully>>`,folderPathTask);
+        }
     });
  
     req.destinationPath = folderPathTask;
