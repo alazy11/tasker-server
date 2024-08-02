@@ -61,30 +61,33 @@ const create = (req, res, next) => {
                   email: email,
                });
                res.cookie("token", token, {
-                  secure: true,
+                  secure: process.env.NODE_ENV === "development" ? false : true,
                   httpOnly: true,
                   sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                  domain: ".tasker-tool.com",
+                  domain: process.env.DOMAIN,
                   path: "/en/company",
-                  maxAge: 3600000,
+                  maxAge: 86400000,
                });
 
-               res.cookie("roomId",roomId, {
-                  secure: true,
-                  // httpOnly: true,
-                  sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                  domain: ".tasker-tool.com",
+               res.cookie("roomId", result[0]["room_ID"], {
+                  secure: process.env.NODE_ENV === "development" ? false : true,
+                  domain: process.env.DOMAIN,
                   path: "/en/company",
                   maxAge: 86400000,
                });
 
                res.cookie("type", 'company', {
-                  secure: true,
-                  // httpOnly: true,
+                  secure: process.env.NODE_ENV === "development" ? false : true,
                   sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                  domain: ".tasker-tool.com",
+                  domain: process.env.DOMAIN,
                   path: "/en/company",
-                  maxAge: 3600000,
+                  maxAge: 86400000,
+               });
+
+               folderPath = path.join(req.FolderPath,'uploads', 'company', `${result.insertId}`,`space`,`${spaceID}`,'project',`${projectID}`,`${folderName}`);
+
+               fs.mkdir(folderPath,{ recursive: true },(err)=>{
+                  console.log('folder error ...',err)
                });
 
                RESPONSE.successHandler(res, 200, {
