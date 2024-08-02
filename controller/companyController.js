@@ -5,6 +5,7 @@ const { hash, compare } = require("bcrypt");
 const AppError = require('../util/customError');
 const {validationResult} = require('express-validator');
 const generatSecretKey = require('../util/generatSecretKey');
+const path = require('node:path');
 // const transporter = require('../util/emailService');
 // require('dotenv').config();
 // const Recipient = require("mailersend").Recipient;
@@ -229,8 +230,7 @@ const login = (req, res, next) => {
                      userName: result[0]["company_name"],
                   });
                   res.cookie("token", token, {
-                     secure: true,
-                     // secure: false,
+                     secure: process.env.NODE_ENV === "development" ? false : true,
                      httpOnly: true,
                      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
                      domain: process.env.DOMAIN,
@@ -240,18 +240,14 @@ const login = (req, res, next) => {
                   });
 
                   res.cookie("roomId", result[0]["room_ID"], {
-                     secure: true,
-                     // secure: false,
-                     // httpOnly: true,
+                     secure: process.env.NODE_ENV === "development" ? false : true,
                      domain: process.env.DOMAIN,
                      path: "/en/company",
                      maxAge: 86400000,
                   });
 
                   res.cookie("type", 'company', {
-                     secure: true,
-                     // secure: false,
-                     // httpOnly: true,
+                     secure: process.env.NODE_ENV === "development" ? false : true,
                      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
                      domain: process.env.DOMAIN,
                      path: "/en/company",
@@ -840,7 +836,7 @@ const deleteNote = (req, res, next) => {
 
 const uploadClip = (req, res, next)=> {
 
-   const folderPath = req.folderPath;
+   const folderPath = path.join(req.folderPath,req.fileName);
    const fileName = req.fileName;
       RESPONSE.successHandler(res, 200, {
          folderPath,
@@ -868,6 +864,24 @@ const saveClip = (req, res, next) => {
       );
 }
 
+const renameClip = (req, res, next) => {
+
+   const user = req.user;
+   const {clipName} = req.body;
+   const clipID = req.params.clipID;
+
+      pool.query('UPDATE company_clip SET title = ? WHERE clip_id = ?',[clipName,clipID],(error,result,fields)=>{
+            if (error) {
+               console.log(error);
+               next(AppError.create(error, 500, "database Error"));
+               return;
+            }
+            RESPONSE.successHandler(res, 200, {
+               message: "rename clip successfully."
+            });
+         }
+      );
+}
 
 const getAllClip = (req, res, next) => {
 
@@ -900,6 +914,49 @@ const getClip = (req, res, next) => {
 }
 
 
+const downloadClip = (req, res, next)=>{
+
+   let {clip_path,name} = JSON.parse(req.query.clip);
+
+res.download(clip_path,name + '.webm', (err) => {
+   if (err) {
+     console.error('Error downloading file:', err);
+   } else {
+     console.log('File downloaded successfully!');
+   }
+ });
+
+}
+
+
+const deleteClip = (req, res, next)=>{
+
+   let {clip_path} = req.body;
+   let clipID = req.params.clipID;
+
+fs.unlink(clip_path, (err) => {
+  if (err) {
+    console.log('Error renaming file:', err);
+    next(AppError.create(err, 500, "file delete error"));
+    return;
+  } else {
+   pool.query(`DELETE FROM company_clip WHERE clip_id = ?`,[clipID],(error,result,fields)=>{
+   if (error) {
+      console.log("database Error",error);
+      next(AppError.create(error, 500, "database Error"));
+      return;
+   }
+
+   RESPONSE.successHandler(res, 200,'delete clip successfully.');
+
+})
+
+}
+
+});
+
+}
+
 
 
 
@@ -926,5 +983,8 @@ module.exports = {
    saveClip,
    getAllClip,
    getClip,
-   logout
+   logout,
+   renameClip,
+   downloadClip,
+   deleteClip
 }
