@@ -50,9 +50,11 @@ const upload = multer({
 const SPACE = Router();
 
 SPACE.route('/').post(authJWTUser,spaceValidator,Space.create).get(authJWTUser,Space.getAllSpaces).put(authJWTUser,Space.updateSpace);
+SPACE.route('/user').get(authJWTUser,Space.getAcceptUserSpaces);
 SPACE.route('/:spaceID').get(authJWTUser,Space.getSpace).delete(authJWTUser,Space.deleteSpace);
 SPACE.route('/:spaceID/rename').put(authJWTUser,Space.renameSpace);
 SPACE.route('/:spaceID/manager').post(authJWTUser,Space.assignManager);
+SPACE.route('/:spaceID/user').post(authJWTUser,Space.setMemberInSpace);
 SPACE.route('/:spaceID/manager/role').post(authJWTUser,Space.roleManager).get(authJWTUser,Space.setRoleManager);
 SPACE.route('/:spaceID/meeting').post(authJWTUser,Space.setMeeting);
 SPACE.route('/:spaceID/meeting/:meet').get(authJWTUser,isCompanyInSpace,Space.isValidMeeting).put(authJWTUser,Space.updateMeeting);

@@ -557,6 +557,7 @@ const createFolder = (req, res, next) => {
 
 
    fs.mkdir(folderPath,{ recursive: true },(err)=>{
+      if(err)
       console.log('folder error ...',err)
    });
 

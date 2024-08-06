@@ -5,16 +5,9 @@ const { hash, compare } = require("bcrypt");
 const AppError = require('../util/customError');
 const {validationResult} = require('express-validator');
 const generatSecretKey = require('../util/generatSecretKey');
+const {sendSecretKeyEmail} = require('../util/emailService');
+const {secretKeyHtmlEmail} = require('../util/contentHtmlEmail');
 const path = require('node:path');
-// const transporter = require('../util/emailService');
-// require('dotenv').config();
-// const Recipient = require("mailersend").Recipient;
-// const EmailParams = require("mailersend").EmailParams;
-// const MailerSend = require("mailersend").MailerSend;
-// const Sender = require("mailersend").Sender;
-
-const nodemailer = require("nodemailer");
-
 
 const create = (req, res, next) => {
       const result = validationResult(req);
@@ -53,6 +46,7 @@ const create = (req, res, next) => {
                if (error) {
                   console.log(error);
                   next(AppError.create(error, 500, "database Error"));
+                  return;
                }
                // console.log("result...", result);
                const token = createToken({
@@ -69,7 +63,7 @@ const create = (req, res, next) => {
                   maxAge: 86400000,
                });
 
-               res.cookie("roomId", result[0]["room_ID"], {
+               res.cookie("roomId", roomId, {
                   secure: process.env.NODE_ENV === "development" ? false : true,
                   domain: process.env.DOMAIN,
                   path: "/en/company",
@@ -82,12 +76,6 @@ const create = (req, res, next) => {
                   domain: process.env.DOMAIN,
                   path: "/en/company",
                   maxAge: 86400000,
-               });
-
-               folderPath = path.join(req.FolderPath,'uploads', 'company', `${result.insertId}`,`space`,`${spaceID}`,'project',`${projectID}`,`${folderName}`);
-
-               fs.mkdir(folderPath,{ recursive: true },(err)=>{
-                  console.log('folder error ...',err)
                });
 
                RESPONSE.successHandler(res, 200, {
@@ -185,14 +173,19 @@ const searchByUserNameAndEmail = (req,res,next) =>{
 }
 
 const getSecretKey = (req, res, next)=>{
-   const {companyName} = req.query;
-   const {companyEmail} = req.query;
-   console.log("companyName",companyName);
-   //  let secretKey = 45646;
+   const {companyName,companyEmail} = req.query;
+
    let secretKey = generatSecretKey(companyName);
-   // console.log("secretKey.....",secretKey)
+
    pool.query('INSERT INTO Secrect_key SET company_name = ?, company_secret_key = ?',[companyName,secretKey],(err,result, fields)=>{
-      if(err) next(AppError.create(err, 500, "database Error"));;
+      if(err) {
+         next(AppError.create(err, 500, "database Error"))
+         return;
+      }
+
+      sendSecretKeyEmail("taskerTeam@tasker-tool.com","Tasker",companyEmail,companyName,"Tasker confirmation code",
+         secretKeyHtmlEmail(secretKey)
+      )
 
       RESPONSE.successHandler(res,200,{
          secretKey: secretKey
@@ -313,66 +306,6 @@ const logout = (req, res, next) => {
    });
 
    RESPONSE.successHandler(res, 200, "logout successfully.");
-}
-
-
-async function send() {
-   // const mailerSend = new MailerSend({
-   //    apiKey: process.env.API_KEY,
-   //  });
-    
-   //  const sentFrom = new Sender("MS_apHeAL@trial-zr6ke4njjymgon12.mlsender.net", "Tasker");
-    
-   //  const recipients = [
-   //    new Recipient("alazyalhimeari11@gmail.com", "alazy")
-   //  ];
-   //  console.log('ok send email......')
-   //  const emailParams = new EmailParams()
-   //    .setFrom(sentFrom)
-   //    .setTo(recipients)
-   //    .setReplyTo(sentFrom)
-   //    .setSubject("This is a Subject")
-   //    .setHtml("<strong>This is the HTML content</strong>")
-   //    .setText("This is the text content");
-   
-   //  try {
-   //     await mailerSend.email.send(emailParams);
-   //     console.log('ok send email')
-   //  } catch(err) {
-   //    console.log(err)
-   //  }
-
-   const transporter = nodemailer.createTransport({
-      host: "smtp.mailersend.net",
-      port: 587,
-      secure: false, // Use `true` for port 465, `false` for all other ports
-      auth: {
-        user: "MS_apHeAL@trial-zr6ke4njjymgon12.mlsender.net",
-        pass: "yUcv4tPhAPf3Gg1f",
-      },
-    });
-
-   //  const info = await
-     transporter.sendMail({
-      from: '"Maddison Foo Koch 👻" <MS_apHeAL@trial-zr6ke4njjymgon12.mlsender.net>', // sender address
-      to: "alazyalhimeari11@gmail.com", // list of receivers
-      subject: "Hello ✔", // Subject line
-      text: "Hello world?", // plain text body
-      html: "<b>Hello world?</b>", // html body
-    },
-    (error, info) => {
-      if (error) {
-        console.error('Error occurred while sending email:', error);
-      } else {
-        console.log('Email sent successfully:', info.response);
-      }
-    }
-   );
-  
-
-   //  console.log("Message sent: %s", info.messageId);
-
-
 }
 
 

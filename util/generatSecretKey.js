@@ -20,13 +20,14 @@ function generatSecretKey(companyName) {
    console.log('ok generate function');
    let secretKey;
    try{
-      // secretKey = await key();
-      secretKey = companyName + 123;
-      // console.log("secretKey",secretKey)
+      secretKey = crypto.randomInt(1000_000).toString().padStart(5, '0');
+      console.log(`key: ${secretKey} length: ${secretKey.length}`);
       return secretKey;
    } catch(error) {
       RESPONSE.errorHandler(res,500,error)
    }
 }
+
+
 
 module.exports = generatSecretKey;

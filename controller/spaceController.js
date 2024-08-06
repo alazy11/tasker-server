@@ -39,7 +39,28 @@ const setMemberInSpace = (req,res,next)=>{
 );
 }
 
+const setOneMemberInSpace = (req,res,next)=>{
 
+   let {
+      memberID,
+      spaceID
+   } = req.body;
+
+   const member = [spaceID,memberID]
+
+   pool.query('INSERT INTO space_members SET space_id = ?, employee_id = ?',[member],(error,result,fields)=>{
+      if (error) {
+         console.log(error);
+         next(AppError.create(error, 500, "database Error"));
+         return;
+      }
+
+      RESPONSE.successHandler(res, 200, {
+         member : result
+      });
+   }
+);
+}
 
 const createTask = (req, res, next,spaceID)=>{
 
@@ -201,7 +222,7 @@ const create = (req, res, next) => {
                next(AppError.create(error, 500, "database Error"));
             }
 
-            
+            if(memberID.length > 0)
             setMemberInSpace(req,res,next);
 
             pool.query('INSERT INTO space_manager_role SET space_id = ?',[spaceID],(error,result,fields)=>{
@@ -690,12 +711,77 @@ const getUserSpaces = (req, res, next)=>{
          if (error) {
             console.log("sql error", error);
             next(AppError.create(error, 500, "database Error"));
+            return;
          }
          // console.log('space result....', result);
 
          RESPONSE.successHandler(res, 200, {
             ...result
          });
+
+      }
+   );
+
+}
+
+
+const getAcceptUserSpaces = (req, res, next)=>{
+
+   let {user} = req.query
+   // console.log('user - spaces - id',req.user)
+   const searchParams = req.query;
+   // const page = parseInt(searchParams.page);
+   const page = searchParams.page;
+   // const recordNumber = parseInt(searchParams.recordNumber);
+   const recordNumber = searchParams.recordNumber;
+
+   const offset = (page - 1) * recordNumber;
+
+   console.log('space result....', user);
+
+
+ pool.query(
+      `SELECT DISTINCT space.space_id FROM space_members INNER JOIN space USING(space_id) WHERE space_members.employee_id = ?`,
+      [user],
+      (error, result, fields) => {
+         if (error) {
+            console.log("sql error", error);
+            next(AppError.create(error, 500, "database Error"));
+            return;
+         }
+         console.log('space result....', result);
+
+         // RESPONSE.successHandler(res, 200,result);
+
+         let resu = [];
+
+         resu = result.map(item=>{
+            return item.space_id;
+         })
+      
+         pool.query(
+            `SELECT space_id,title,icon, icon_text, icon_path, color FROM space WHERE space_id NOT IN('${resu.join("','")}')`,
+            [user],
+            (error, result, fields) => {
+               if (error) {
+                  console.log("sql error", error);
+                  next(AppError.create(error, 500, "database Error"));
+                  return;
+               }
+               console.log('space result....', result);
+      
+               RESPONSE.successHandler(res, 200,result);
+      
+               
+               // RESPONSE.successHandler(res, 200, {
+               //    result: {
+               //       ...result
+               //    },
+               //    total: totalRows
+               // });
+      
+            }
+         );
 
       }
    );
@@ -723,6 +809,7 @@ const getAllMembersSpace = (req, res, next)=> {
          if (error) {
             console.log("sql error", error);
             next(AppError.create(error, 500, "database Error"));
+            return;
          }
          // console.log('space result all members....', result);
    
@@ -734,6 +821,7 @@ const getAllMembersSpace = (req, res, next)=> {
                if (countError) {
                   console.log("count error", countError);
                   next(AppError.create(countError, 500, "database Error"));
+                  return;
                }
    
                const totalRows = countResult[0].count;
@@ -1198,6 +1286,7 @@ module.exports ={
    deleteMember,
    searchMember,
    getUserSpaces,
+   getAcceptUserSpaces,
    uploadSpaceFileChat,
    getSpaceMessage,
    deleteSpaceMessage,
