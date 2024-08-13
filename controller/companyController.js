@@ -188,7 +188,7 @@ console.log("sec",secretKey);
       sendSecretKeyEmail("taskerTeam@tasker-tool.com","Tasker",companyEmail,companyName,"Tasker confirmation code",
          secretKeyHtmlEmail(secretKey)
       )
-
+console.log("send after");
       RESPONSE.successHandler(res,200,{
          secretKey: secretKey
       });
