@@ -2,7 +2,7 @@
 
 
 const secretKeyHtmlEmail = (secretKey)=>{
-
+console.log("html email",secretKey);
     return `
     
     <div style="padding:0;margin:0;background-color:#ffffff"><span style="display:none"><img src="https://ci3.googleusercontent.com/meips/ADKq_NbfBL08KL_duuCcD6SQ6yyU__hRKwtyXXRY7GeYdYLzv7qFeWvB2N3FWpYk_DdDwE0A4FucWm9muc1GKeBNppYmMhUZE7nN2CQML4bNMZmKz-_YzpG5mc3GMPYvHssYb1-xMLHWj40Lr5EZPZH0kGlfYGUfMBH49jwvSOE1W_JiBODzCBgXzBymuCQSD_Ztr0iydDzSpTkrH9r7ulRben6KymF0-8YJz7wylrkHClbbD4oeKeY6_RWDaFUBNceWt5H5nkDTNLhIA3wW2Z5xaMvZb3_R8Qxmf1dvRrexFN0caHsjHSu33_DnCXGb0Br7imRlMS4yotGjkLaU1EFaix6XckEFwIw6wyQ7H_MijjLmFHpuDmg-kr00Ado6O_zB2maHHpGBx58nf6LYk7wIqfuyoEMBJtTBlc8_673qrVMsWV48d1Uj9VVb7EsBI7uZqak_BxPD8Z3SmAZDWAK06N1-YbYbmqMaxGxhLFzPKN9MVa0zHr2oi8nYzXs02IckTzF1uFI=s0-d-e1-ft#https://m3z0vklovg7qrx5e.click.mailersend.net/tl/ows/eyJpdiI6IlRzc09OaWJiNUlOSEZjeHBpU3k1RVE9PSIsInZhbHVlIjoiYTJ0VDV1WWZVV3E1MnpIUXdydG9LS3hrSk5Xcm1TNWFEaHRabk83dllsZDN6bjdFWW9Xd1Y1Y0lLWjlwcGRZQmJ2aFZoSTFobzI4K0IxZFdzM2ZDM1ZFMktRZDBlTDFkZ25FMnZiN0FSMDA9IiwibWFjIjoiN2Y1ZmRiYTY4Y2MxZDZiYzA1ZGZiNzY2MzVhZWE3NGUxYjc3MmQyNDZkMGU2MGI1YTA1MjNmZTI0N2U5NmY4ZCIsInRhZyI6IiJ9" width="1" height="1" alt="" style="display:block;height:0px;width:0px;max-width:0px;max-height:0px;overflow:hidden" border="0" class="CToWUd" data-bit="iit"></span>
