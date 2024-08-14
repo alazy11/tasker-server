@@ -179,7 +179,7 @@ const getSecretKey = (req, res, next)=>{
 
 console.log("sec",secretKey);
 
-   pool.query('INSERT INTO Secrect_key SET company_name = ?, company_secret_key = ?',[companyName,secretKey],(err,result, fields)=>{
+   pool.query('INSERT INTO secrect_key SET company_name = ?, company_secret_key = ?',[companyName,secretKey],(err,result, fields)=>{
       if(err) {
          next(AppError.create(err, 500, "database Error"))
          return;
