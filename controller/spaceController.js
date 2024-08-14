@@ -760,8 +760,8 @@ const getAcceptUserSpaces = (req, res, next)=>{
          })
       
          pool.query(
-            `SELECT space_id,title,icon, icon_text, icon_path, color FROM space WHERE space_id NOT IN('${resu.join("','")}')`,
-            [user],
+            `SELECT space_id,title,icon, icon_text, icon_path, color FROM space WHERE space_id NOT IN('${resu.join("','")}') AND company_id = ?`,
+            [req.user.id],
             (error, result, fields) => {
                if (error) {
                   console.log("sql error", error);

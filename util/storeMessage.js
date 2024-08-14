@@ -4,6 +4,8 @@ const storeSpaceMessage = async(message)=>{
 
    const msg = [message.room_id, message.user_id, message.company_id, message.send_date, message.send_time, message.ms_type, message.conten, message.size, message.name];
 
+   console.log("mssage text", message.conten)
+
    return new Promise((resolve,reject)=>{
 
       pool.query(
