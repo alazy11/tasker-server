@@ -23,7 +23,8 @@ function generatSecretKey(companyName) {
       secretKey = crypto.randomInt(1000_000).toString().padStart(5, '0');
       console.log(`key: ${secretKey} length: ${secretKey.length}`);
       return secretKey;
-   } catch(error) {
+   } catch(error){
+console.log("error generate key",error);
       RESPONSE.errorHandler(res,500,error)
    }
 }

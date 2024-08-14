@@ -177,6 +177,8 @@ const getSecretKey = (req, res, next)=>{
 
    let secretKey = generatSecretKey(companyName);
 
+console.log("sec",secretKey);
+
    pool.query('INSERT INTO Secrect_key SET company_name = ?, company_secret_key = ?',[companyName,secretKey],(err,result, fields)=>{
       if(err) {
          next(AppError.create(err, 500, "database Error"))
@@ -186,7 +188,7 @@ const getSecretKey = (req, res, next)=>{
       sendSecretKeyEmail("taskerTeam@tasker-tool.com","Tasker",companyEmail,companyName,"Tasker confirmation code",
          secretKeyHtmlEmail(secretKey)
       )
-
+console.log("send after");
       RESPONSE.successHandler(res,200,{
          secretKey: secretKey
       });

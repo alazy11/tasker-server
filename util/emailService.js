@@ -39,6 +39,7 @@ const {Sender} = require("mailersend");
 
 const sendSecretKeyEmail = (senderEmail,senderName,recipientEmail,recipientName,subject,content) =>{
 
+console.log("ok send",recipientEmail);
   const mailerSend = new MailerSend({
     // apiKey: process.env.API_KEY,
     apiKey: "mlsn.b7118cd58c3ce2b8023c02e959520dba84d290b6b3877aaf7f0bf02df6209e2a"
