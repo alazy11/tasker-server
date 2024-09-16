@@ -55,30 +55,27 @@ const create = (req, res, next) => {
                email: email,
             });
             res.cookie("token", token, {
-               secure: true,
+               secure: process.env.NODE_ENV === "development" ? false : true,
                httpOnly: true,
                sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-               domain: ".tasker-tool.com",
+               domain: process.env.DOMAIN,
                path: "/en/user",
-               maxAge: 1200000,
+               maxAge: 86400000,
             });
 
             res.cookie("roomId", roomId, {
-               secure: true,
-               // httpOnly: true,
-               sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-               domain: ".tasker-tool.com",
+               secure: process.env.NODE_ENV === "development" ? false : true,
+               domain: process.env.DOMAIN,
                path: "/en/user",
-               maxAge: 3600000,
+               maxAge: 86400000,
             });
 
             res.cookie("type", 'user', {
-               secure: true,
-               // httpOnly: true,
+               secure: process.env.NODE_ENV === "development" ? false : true,
                sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-               domain: ".tasker-tool.com",
+               domain: process.env.DOMAIN,
                path: "/en/user",
-               maxAge: 3600000,
+               maxAge: 86400000,
             });
 
             RESPONSE.successHandler(res, 200, {
@@ -174,30 +171,27 @@ const login = (req, res, next) => {
                      userName: result[0]["user_name"],
                   });
                   res.cookie("token", token, {
-                     secure: true,
+                     secure: process.env.NODE_ENV === "development" ? false : true,
                      httpOnly: true,
                      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                     domain: ".tasker-tool.com",
+                     domain: process.env.DOMAIN,
                      path: "/en/user",
-                     maxAge: 3600000,
+                     maxAge: 86400000,
                   });
-
+      
                   res.cookie("roomId", result[0]["room_ID"], {
-                     secure: true,
-                     // httpOnly: true,
-                     sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                     domain: ".tasker-tool.com",
+                     secure: process.env.NODE_ENV === "development" ? false : true,
+                     domain: process.env.DOMAIN,
                      path: "/en/user",
-                     maxAge: 3600000,
+                     maxAge: 86400000,
                   });
-
+      
                   res.cookie("type", 'user', {
-                     secure: true,
-                     // httpOnly: true,
+                     secure: process.env.NODE_ENV === "development" ? false : true,
                      sameSite: process.env.NODE_ENV === "development" ? "lax" : "none",
-                     domain: ".tasker-tool.com",
+                     domain: process.env.DOMAIN,
                      path: "/en/user",
-                     maxAge: 3600000,
+                     maxAge: 86400000,
                   });
 
                   RESPONSE.successHandler(res, 200, {
@@ -543,12 +537,12 @@ const pullRequest = async(req, res, next) => {
    const pull = [pullID,pullDate,description,taskID,projectID,employee_id]
 
 
-   console.log(selectedFile)
-   console.log(pullDate)
-   console.log(employeeID)
-   console.log(pullID)
-   console.log(description)
-   console.log(taskID)
+   // console.log(selectedFile)
+   // console.log(pullDate)
+   // console.log(employeeID)
+   // console.log(pullID)
+   // console.log(description)
+   // console.log(taskID)
    // let file = [req.files[0].path,taskID,projectID,employeeID,req.files[0].filename,req.files[0].mimetype,uploadDate,req.files[0].size,folderID]
    pool.query(`INSERT INTO pull_request_${spaceID} SET
       pull_id = ?,

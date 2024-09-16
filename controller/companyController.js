@@ -7,6 +7,7 @@ const {validationResult} = require('express-validator');
 const generatSecretKey = require('../util/generatSecretKey');
 const {sendSecretKeyEmail} = require('../util/emailService');
 const {secretKeyHtmlEmail} = require('../util/contentHtmlEmail');
+const fs = require('node:fs');
 const path = require('node:path');
 
 const create = (req, res, next) => {
